@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Appointments from './component/Appointments/Appointments/Appointments';
 import Dashboard from './component/Dashboard/Dashboard';
 import Home from './component/Home/Home';
+import AdminRoute from './component/Login/AdminRoute/AdminRoute';
 import Login from './component/Login/Login/Login';
 import PrivateRoute from './component/Login/PrivateRoute/PrivateRoute';
 import Register from './component/Login/Register/Register';
@@ -22,9 +23,9 @@ const App = () => {
           <PrivateRoute path='/appointments'>
             <Appointments></Appointments>
           </PrivateRoute>
-          <PrivateRoute path='/dashboard'>
+          <AdminRoute path='/dashboard'>
             <Dashboard></Dashboard>
-          </PrivateRoute>
+          </AdminRoute>
           <Route path='/login'>
             <Login></Login>
           </Route>

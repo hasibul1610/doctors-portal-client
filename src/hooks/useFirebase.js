@@ -1,4 +1,4 @@
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithPopup, updateProfile } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithPopup, updateProfile, getIdToken } from "firebase/auth";
 import { useEffect, useState } from "react";
 import initializeAuthentication from "../component/Login/Firebase/firebase.init";
 
@@ -8,6 +8,7 @@ initializeAuthentication();
 const useFirebase = () => {
     const [user, setUser] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [authError, setAuthError] = useState("")
 
     const auth = getAuth();
@@ -50,6 +51,9 @@ const useFirebase = () => {
         })
             .finally(() => setIsLoading(false));
     }
+
+
+
     const loginUser = (email, password, location, history) => {
         setIsLoading(true);
         signInWithEmailAndPassword(auth, email, password)
@@ -84,7 +88,8 @@ const useFirebase = () => {
             if (user) {
 
                 setUser(user)
-
+                getIdToken(user)
+                    .then(idToken => localStorage.setItem('idToken', idToken))
             } else {
                 setUser({})
             }
@@ -93,6 +98,17 @@ const useFirebase = () => {
         return () => unsubscribe;
     }, [])
 
+    //check admin
+    useEffect(() => {
+        if (user.email) {
+            fetch(`http://localhost:5000/isAdmin?email=${user.email}`)
+                .then(res => res.json())
+                .then(data => setIsAdmin(data))
+        }
+
+    }, [user.email])
+    console.log(isAdmin);
+
     return {
         user,
         isLoading,
@@ -100,7 +116,8 @@ const useFirebase = () => {
         registerUser,
         signInUsingGoogle,
         loginUser,
-        logOut
+        logOut,
+        isAdmin
     }
 
 }

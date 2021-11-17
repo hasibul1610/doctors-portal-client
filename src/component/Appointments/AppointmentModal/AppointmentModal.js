@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -25,9 +25,31 @@ export default function AppointmentModal({ open, handleClose, name, time, date }
     // const handleOpen = () => setOpen(true);
     // const handleClose = () => setOpen(false);
 
+
+    const [formData, setFormData] = useState({});
+
+    const handleChange = e => {
+        const newDate = date.toLocaleDateString()
+        const newData = { ...formData, newDate, time };
+        newData[e.target.name] = e.target.value;
+        setFormData(newData);
+    }
+
     const handleSubmit = e => {
-        alert("Submitted")
+        // alert("Submitted")
         e.preventDefault();
+        // console.log(formData);
+        fetch('http://localhost:5000/addAppointment', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+            })
     }
 
 
@@ -60,6 +82,8 @@ export default function AppointmentModal({ open, handleClose, name, time, date }
                             <TextField
                                 fullWidth
                                 size="small"
+                                onChange={handleChange}
+                                name="name"
                                 placeholder="name"
                                 margin='dense'
                             />
@@ -67,12 +91,16 @@ export default function AppointmentModal({ open, handleClose, name, time, date }
                                 fullWidth
                                 size="small"
                                 placeholder="Phone Number"
+                                onChange={handleChange}
+                                name="phone"
                                 margin='dense'
                             />
                             <TextField
                                 fullWidth
                                 size="small"
                                 placeholder="Email"
+                                onChange={handleChange}
+                                name="email"
                                 margin='dense'
                             />
                             <TextField
